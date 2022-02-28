@@ -550,6 +550,7 @@ def main():
             if 1 not in state1:  # 无服务时不选状态
                 continue
             print('state_count', state_count)
+
             if state_count[state_num] != 0:
                 state_count[state_num] += 1
                 if state_count[state_num] > max_count[state_num]:
