@@ -153,14 +153,15 @@ class attack_model2:
         self.attack_list = list
 
     def attack_model_2(self, number):
-        self.num = number
         self.get_attackNodes()
-        return self.attack_list[number]
+        self.num = number % len(self.attack_list)
+        print(len(self.attack_list))
+        return self.attack_list[self.num]
 
 
 if __name__ == '__main__':
     a2 = attack_model2()
-    print(a2.attack_model_2(0))
+    print(a2.attack_model_2(163))
 
 
 
