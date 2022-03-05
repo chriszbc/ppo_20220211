@@ -1,8 +1,8 @@
 # PPO主要通过限制新旧策略的比率，那些远离旧策略的改变不会发生
 
 # import tensorflow as tf
-import tensorflow.compat.v1 as tf
-tf.compat.v1.disable_eager_execution()
+import tensorflow as tf
+# tf.compat.v1.disable_eager_execution()
 import numpy as np
 import matplotlib.pyplot as plt
 import gym
@@ -16,7 +16,7 @@ C_LR = 0.0002  # c网络的学学习速率
 BATCH = 32  # 缓冲池长度
 A_UPDATE_STEPS = 10  #
 C_UPDATE_STEPS = 10
-S_DIM, A_DIM = 3, 1  # 状态维度和动作维度
+S_DIM, A_DIM = 7, 1  # 状态维度和动作维度
 # 作者一共提出了两种方法，一种是Adaptive KL Penalty Coefficient, 另一种是Clipped Surrogate Objective,结果证明，clip的这个方法更好
 METHOD = [
     dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL惩罚方法
@@ -126,8 +126,8 @@ class PPO(object):
         # print('s[np.newaxis, :]: ', s, s.shape)
         a = self.sess.run(self.sample_op, {self.tfs: s})[0]
         print("action",a)
-        print("np.clip(a, -2, 2)", np.clip(a, -2, 2))
-        return np.clip(a, -2, 2)
+        print("np.clip(a, -2, 2)", np.clip(a, -2.5, 2.5))
+        return np.clip(a, -2.5, 2.5)
         # np.clip: 是一个截取函数，用于截取数组中小于或者大于某值的部分，并使得被截取部分等于固定值。所有比a_min小的数都会强制变为a_min；
 
     def get_v(self, s):

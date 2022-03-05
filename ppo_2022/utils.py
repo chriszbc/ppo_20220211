@@ -66,6 +66,13 @@ def process_action_set():
             index += 1
         action_set.append(action)
         function_set.append(function)
+    action_set_test = []
+    for i in range(0, 500, 25):
+        action_set_test.append(action_set[i])
 
     return action_set, function_set
+
+if __name__ == '__main__':
+    a, _ = process_action_set()
+    print(len(a))
 

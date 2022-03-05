@@ -611,4 +611,4 @@ def main():
             count_ = 0
         print(training_time)
 
-if __name__ == '__main__':
+    if __name__ == '__main__':

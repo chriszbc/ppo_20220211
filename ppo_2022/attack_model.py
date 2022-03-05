@@ -139,23 +139,34 @@ class attack_model2:
     def __init__(self):
         self.num = 0
         self.attack_list = []
+        self.ips = {"192.168.10.50": 0, "192.168.10.51": 1, "192.168.10.19": 2, "192.168.10.17": 3, "192.168.10.16": 4,
+                    "192.168.10.12": 5, "192.168.10.9": 6, "192.168.10.5": 7, "192.168.10.8": 8, "192.168.10.14": 9,
+                    "192.168.10.15": 10, "192.168.10.25": 11}
 
     def get_attackNodes(self):
         csvFile = open("attack.csv", "r")
         reader = csv.reader(csvFile)
         list = []
+        attack_list = []
         for item in reader:
             list.append(item)
+
         for l in list:
+            attack_list.append([])
             for i in range(len(l)):
                 l[i]= l[i].replace("'", "")
-        print(list)
-        self.attack_list = list
+                l[i] = l[i].replace(",", "")
+                if(l[i] != ""):
+                    attack_list[-1].append(self.ips[l[i]])
+                print(l[i])
+        print(attack_list)
+        self.attack_list = attack_list
 
     def attack_model_2(self, number):
-        self.get_attackNodes()
+        if self.attack_list == []:
+            self.get_attackNodes()
         self.num = number % len(self.attack_list)
-        print(len(self.attack_list))
+        # print(len(self.attack_list))
         return self.attack_list[self.num]
 
 

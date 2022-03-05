@@ -32,46 +32,45 @@ class env:
         return state, state_num
 
     def envfeedback(self, attack_node, action_num, state):  # 这里算出reward, 并return 出来
-        reward = 0
-        value = 0
+        print("111111", action_num)
+        service_flows = self.action_set[action_num]
+        service_node = []
 
-        # attacker = CrossFire()
-        # test_nodeC = attacker.selectNodes(7)
+        if state == 0:
+            service_node.extend(service_flows[0])
+        elif state == 1:
+            service_node.extend(service_flows[1])
+        elif state == 2:
+            service_node.extend(service_flows[2])
+        elif state == 3:
+            service_node.extend(service_flows[0])
+            service_node.extend(service_flows[1])
+        elif state == 4:
+            service_node.extend(service_flows[0])
+            service_node.extend(service_flows[2])
+        elif state == 5:
+            service_node.extend(service_flows[1])
+            service_node.extend(service_flows[2])
+        elif state == 6:
+            service_node.extend(service_flows[0])
+            service_node.extend(service_flows[1])
+            service_node.extend(service_flows[2])
 
-        index = []
+        print('state_num: ', state)
+        print("service_node: ", service_node)
+        print("attack_node: ", attack_node)
+
         hit = 0
 
-        test_node2 = [0, 58, 7, 6, 3, 2, 10]
-
-        for t in attack_node:
-            if t in self.action_set[action_num]:
+        for t in service_node:
+            if t in attack_node:
                 hit += 1
             #     reward = 0
             # else:
             #     reward = 10
+        print("hit: ", hit)
 
-        reward = 1 - hit/len(self.action_set[action_num])
-        reward_ = reward * reward
-
-        if state == 0 and action_num > 37:
-                reward = value
-        elif state == 1:
-            if action_num < 38 or action_num > 81:
-                reward = value
-        elif state == 2:
-            if action_num < 82 or action_num > 117:
-                reward = value
-        elif state == 3:
-            if action_num < 118 or action_num > 167:
-                reward = value
-        elif state == 4:
-            if action_num < 168 or action_num > 217:
-                reward = value
-        elif state == 5:
-            if action_num < 218 or action_num > 267:
-                reward = value
-        elif state == 6:
-            if action_num < 268:
-                reward = value
+        reward = 1 - hit/len(service_node)
+        reward_ = reward * reward * 10
 
         return reward, reward_
