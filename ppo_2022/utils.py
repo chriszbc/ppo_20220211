@@ -72,7 +72,35 @@ def process_action_set():
 
     return action_set, function_set
 
+
+def process_old_action_set():
+    my_file = open("action_set_123.txt", 'r+')
+    action_set = []
+    function_set = []  # [[[10, 10, 11], [2, 7, 6], [2, 2, 2]], [[...
+    action_flow = []
+    action_function = []
+    for i in range(150):
+        content = my_file.readline()
+        # print(content)
+        line = content.strip()
+        node = line.split(' ')
+        flow = []
+        for n in node:
+            if n == '':
+                continue
+            flow.append(int(n))
+        action_flow.append(flow)
+
+    for f in action_flow:
+        flow = []
+        for j in range(3):
+            flow.append(f)
+        action_set.append(flow)
+
+    return action_set, function_set  # TODO function_set
+
+
 if __name__ == '__main__':
-    a, _ = process_action_set()
-    print(len(a))
+    a = process_old_action_set()
+    print(a)
 

@@ -22,10 +22,10 @@ def main():
     # env = gym.make('Pendulum-v0').unwrapped
 
     # 初始化部分
-    action_set, function_set = utils.process_action_set()  # 动作集
+    action_set, function_set = utils.process_old_action_set()  # 动作集
     ppo = ppo_mod.PPO()
     env = Env.env(action_set)
-    a_model_2 = attack_model.attack_model2()
+    a_model_1 = attack_model.attack_model1()
     all_ep_r = []
     times = 0
 
@@ -42,14 +42,14 @@ def main():
             s = np.array(state)
 
             a = ppo.choose_action(s)  # 输出action，不需要处理嘛？？？
-            action_num = int(a)*100+249
+            action_num = int(a)*10+24
             print("action: ", action_num)
 
             print('---------state:', state, '----------------')
 
             if 1 not in state:  # 无服务时不选状态
                 continue
-            a_node = a_model_2.attack_model_2(times)  # 被攻击的点， 为1-12代号
+            a_node = a_model_1.attack_model_1()  # 被攻击的点， 为1-12代号
             a_node_test = [2, 6, 10]
             print("attack_node: ", a_node)
             times += 1
@@ -81,7 +81,7 @@ def main():
                 ppo.update(bs, ba, br)  # 更新PPO TODO 这些定义具体是干什么用的呢？
                 print("22222222222222222222222")
 
-        file_name = 'data/ppo_reward_fw3.txt'
+        file_name = 'data/ppo_reward_old_2.txt'
         with open(file_name, 'a') as file_obj:
             file_obj.write(str(reward_sum))
             file_obj.write('\n')
