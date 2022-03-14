@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 class attack_model1:
 
@@ -170,9 +171,101 @@ class attack_model2:
         return self.attack_list[self.num]
 
 
+class round_attack:
+    def __init__(self):
+        self.edges, _ = self.load_edges()
+        self.attackedAreas = 0
+
+    # load two-way topology
+    def load_edges(self):
+        file = 'network-brand.txt'
+        edges = {}
+        B = {}
+        topo = []  # topo[i] concludes the nodes connected to node i
+        with open(file) as f:
+            datas = f.readlines()
+
+        for d in datas:
+            d = d.split()
+            d = [int(x) for x in d]
+            i, j, b = d[0], d[1], d[2]
+            if i in edges:
+                edges[i].append([j, b])
+            else:
+                edges[i] = [[j, b]]
+            if j in edges:
+                edges[j].append([i, b])
+            else:
+                edges[j] = [[i, b]]
+
+        i = 0
+        keys = list(edges.keys())
+        keys.sort()
+        for key in keys:
+            while (i != key):
+                i = i + 1
+                topo.append([])
+            topo.append([j[0] for j in edges[key]])
+            B[key] = [j[1] for j in edges[key]]
+            i = i + 1
+
+        print('===Loaded topology with ' + str(len(topo)) + ' nodes===')
+        return topo, B
+
+    # randomly select a start node and return the largest scale of its linked nodes
+    def selectNodes(self, num=5):
+        import random
+
+        edges = self.edges
+        all_nodes = set()
+        attack_all = [[]]
+        # start = random.choice(list(range(len(edges))))
+        start = random.choice([3, 5, 20, 50, 70])
+        print(start)
+
+        all_nodes.add(start)
+
+        area = 0
+        attack_all[area] = set()
+        attack_all[area].add(start)
+
+        while (sum([len(a) for a in attack_all]) < num):
+            new_nodes = set()
+            for s in attack_all[area]:
+                for n in edges[s]:
+                    new_nodes.add(n)
+            attacks = list(new_nodes)
+            for a in attack_all:
+                attacks = attacks + list(a)
+            # if len(set(attacks)) <= num:
+            attack_all[area] = new_nodes
+            all_nodes = set(list(new_nodes) + list(all_nodes))
+            all_nodes_ls = list(all_nodes)
+
+            if (len(all_nodes_ls) <= num):
+                return list(all_nodes)
+            else:
+                nodes = np.random.choice(all_nodes_ls,num, replace=False)
+
+                print(nodes)
+
+
+            # else:
+            #     area = area + 1
+            #     attack_all.append(set())
+            #     # new_start = random.choice(list(range(len(edges))))
+            #     new_start = random.choice(list(range(100)))
+            #     attack_all[area].add(new_start)
+            #
+            #     all_nodes.add(new_start)
+
+        self.attackedAreas = area
+        return nodes
+
+
 if __name__ == '__main__':
-    a2 = attack_model2()
-    print(a2.attack_model_2(163))
+    a2 = round_attack()
+    print(a2.selectNodes(5))
 
 
 

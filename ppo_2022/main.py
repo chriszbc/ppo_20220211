@@ -4,7 +4,7 @@ import ppo_2022.ppo_mod as ppo_mod
 import ppo_2022.utils as utils
 import numpy as np
 
-EP_MAX = 1000  # 最大步数
+EP_MAX = 500  # 最大步数
 EP_LEN = 128
 GAMMA = 0.9  # 折扣因子
 A_LR = 0.0001  # A网络的学习速率
@@ -35,6 +35,8 @@ def main():
         buffer_s, buffer_a, buffer_r = [], [], []  # 缓存区
         ep_r = 0  # 初始化回合
         reward_sum = 0
+        attack_times = 0
+        defance_rate_sum = 0
 
         for t in range(EP_LEN):  # 在规定的回合长度内
 
@@ -50,11 +52,14 @@ def main():
             if 1 not in state:  # 无服务时不选状态
                 continue
             a_node = a_model_2.attack_model_2(times)  # 被攻击的点， 为1-12代号
+            attack_times += 1
             a_node_test = [2, 6, 10]
             print("attack_node: ", a_node)
             times += 1
 
-            r, r_ = env.envfeedback(attack_node=a_node, action_num=action_num, state=state_num)  # envfeedback要处理
+            defence_rate, r_ = env.envfeedback(attack_node=a_node, action_num=action_num, state=state_num)  # envfeedback要处理
+            defance_rate_sum += defence_rate
+
 
             reward_sum += r_
 
@@ -63,7 +68,6 @@ def main():
             buffer_r.append(r_)  # 规范奖励，发现有用的东西
 
             # s = s_
-            ep_r += r
 
             # 更新PPO
             # 如果buffer收集一个batch或者episode完了
@@ -81,9 +85,9 @@ def main():
                 ppo.update(bs, ba, br)  # 更新PPO TODO 这些定义具体是干什么用的呢？
                 print("22222222222222222222222")
 
-        file_name = 'data/ppo_reward_fw3.txt'
+        file_name = 'data/ppo_dRate_realData_1.txt'
         with open(file_name, 'a') as file_obj:
-            file_obj.write(str(reward_sum))
+            file_obj.write(str(defance_rate_sum/attack_times))
             file_obj.write('\n')
 
 

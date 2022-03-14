@@ -69,8 +69,9 @@ class env:
             # else:
             #     reward = 10
         print("hit: ", hit)
+        # hit = 0
 
-        reward = 1 - hit/len(service_node)
-        reward_ = reward * reward * 10
+        defence_rate = 1 - hit/len(service_node)
+        reward_ = defence_rate * defence_rate * 10
 
-        return reward, reward_
+        return defence_rate, reward_

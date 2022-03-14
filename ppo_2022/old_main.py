@@ -26,6 +26,7 @@ def main():
     ppo = ppo_mod.PPO()
     env = Env.env(action_set)
     a_model_1 = attack_model.attack_model1()
+    a_model_2 = attack_model.round_attack()
     all_ep_r = []
     times = 0
 
@@ -35,6 +36,8 @@ def main():
         buffer_s, buffer_a, buffer_r = [], [], []  # 缓存区
         ep_r = 0  # 初始化回合
         reward_sum = 0
+        attack_times = 0
+        defance_rate_sum = 0
 
         for t in range(EP_LEN):  # 在规定的回合长度内
 
@@ -49,13 +52,14 @@ def main():
 
             if 1 not in state:  # 无服务时不选状态
                 continue
-            a_node = a_model_1.attack_model_1()  # 被攻击的点， 为1-12代号
-            a_node_test = [2, 6, 10]
-            print("attack_node: ", a_node)
+            a_node = a_model_1.attack_model_1()  # 直接DDoS，被攻击的点， 为1-12代号
+            a_node_2 = a_model_2.selectNodes()
+            attack_times += 1
+            print("attack_node: ", a_node_2)
             times += 1
 
-            r, r_ = env.envfeedback(attack_node=a_node, action_num=action_num, state=state_num)  # envfeedback要处理
-
+            defence_rate, r_  = env.envfeedback(attack_node=a_node, action_num=action_num, state=state_num)  # envfeedback要处理
+            defance_rate_sum += defence_rate
             reward_sum += r_
 
             buffer_s.append(s)  # 把这些参量加到缓存区
@@ -63,7 +67,7 @@ def main():
             buffer_r.append(r_)  # 规范奖励，发现有用的东西
 
             # s = s_
-            ep_r += r
+
 
             # 更新PPO
             # 如果buffer收集一个batch或者episode完了
@@ -79,11 +83,15 @@ def main():
                 bs, ba, br = np.vstack(buffer_s), np.vstack(buffer_a), np.array(discounted_r)[:, np.newaxis]
                 buffer_s, buffer_a, buffer_r = [], [], []
                 ppo.update(bs, ba, br)  # 更新PPO TODO 这些定义具体是干什么用的呢？
-                print("22222222222222222222222")
+                # print("22222222222222222222222")
 
-        file_name = 'data/ppo_reward_old_2.txt'
+        # file_name = 'data/ppo_reward_old_undirect_5.txt'
+        # with open(file_name, 'a') as file_obj:
+        #     file_obj.write(str(reward_sum))
+        #     file_obj.write('\n')
+        file_name = 'data/ppo_dRate_simData_1.txt'
         with open(file_name, 'a') as file_obj:
-            file_obj.write(str(reward_sum))
+            file_obj.write(str(defance_rate_sum / attack_times))
             file_obj.write('\n')
 
 
