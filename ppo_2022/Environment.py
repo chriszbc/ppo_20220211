@@ -65,13 +65,61 @@ class env:
         for t in service_node:
             if t in attack_node:
                 hit += 1
-            #     reward = 0
-            # else:
-            #     reward = 10
+
         print("hit: ", hit)
         # hit = 0
 
         defence_rate = 1 - hit/len(service_node)
+        reward_ = defence_rate * defence_rate * 10
+
+        return defence_rate, reward_
+
+    def  multipath_envfeedback(self, attack_node, action_num, state):  # 这里算出reward, 并return 出来
+        print("111111", action_num)
+        action_num1 = random.randint(0,499)
+        action_num2 = random.randint(0, 499)
+        action_num3 = random.randint(0, 499)
+        service_flows = []
+        service_flows.extend(self.action_set[action_num1])
+        service_flows.extend(self.action_set[action_num2])
+        service_flows.extend(self.action_set[action_num3])
+
+        service_node = []
+
+        if state == 0:
+            service_node.extend(service_flows[0])
+        elif state == 1:
+            service_node.extend(service_flows[1])
+        elif state == 2:
+            service_node.extend(service_flows[2])
+        elif state == 3:
+            service_node.extend(service_flows[0])
+            service_node.extend(service_flows[1])
+        elif state == 4:
+            service_node.extend(service_flows[0])
+            service_node.extend(service_flows[2])
+        elif state == 5:
+            service_node.extend(service_flows[1])
+            service_node.extend(service_flows[2])
+        elif state == 6:
+            service_node.extend(service_flows[0])
+            service_node.extend(service_flows[1])
+            service_node.extend(service_flows[2])
+
+        print('state_num: ', state)
+        print("service_node: ", service_node)
+        print("attack_node: ", attack_node)
+
+        hit = 0
+
+        for t in service_node:
+            if t in attack_node:
+                hit += 1
+
+        print("hit: ", hit)
+        # hit = 0
+
+        defence_rate = 0.99 - hit / len(service_node)
         reward_ = defence_rate * defence_rate * 10
 
         return defence_rate, reward_

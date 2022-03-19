@@ -3,6 +3,7 @@ import ppo_2022.Environment as Env
 import ppo_2022.ppo_mod as ppo_mod
 import ppo_2022.utils as utils
 import numpy as np
+import random
 
 EP_MAX = 500  # 最大步数
 EP_LEN = 128
@@ -90,6 +91,105 @@ def main():
             file_obj.write(str(defance_rate_sum/attack_times))
             file_obj.write('\n')
 
+def compare_random_main():
+    # env = gym.make('Pendulum-v0').unwrapped
+
+    # 初始化部分
+    action_set, function_set = utils.process_action_set()  # 动作集
+    ppo = ppo_mod.PPO()
+    env = Env.env(action_set)
+    a_model_2 = attack_model.attack_model2()
+    all_ep_r = []
+    times = 0
+
+    # 循环部分
+    for ep in range(EP_MAX):
+        # s = env.reset()  # 状态初始化
+        buffer_s, buffer_a, buffer_r = [], [], []  # 缓存区
+        ep_r = 0  # 初始化回合
+        reward_sum = 0
+        attack_times = 0
+        defance_rate_sum = 0
+
+        for t in range(EP_LEN):
+
+            state, state_num = env.RequestArrive()
+            s = np.array(state)
+
+            action_num = random.randint(0,499)
+
+            print("action: ", action_num)
+
+            print('---------state:', state, '----------------')
+
+            if 1 not in state:
+                continue
+            a_node = a_model_2.attack_model_2(times)
+            attack_times += 1
+            a_node_test = [2, 6, 10]
+            print("attack_node: ", a_node)
+            times += 1
+
+            defence_rate, r_ = env.envfeedback(attack_node=a_node, action_num=action_num, state=state_num)
+            defance_rate_sum += defence_rate
+
+            reward_sum += r_
+
+        file_name = 'data/random_dRate_realData_1.txt'
+        with open(file_name, 'a') as file_obj:
+            file_obj.write(str(defance_rate_sum / attack_times))
+            file_obj.write('\n')
+
+def compare_maltipath_main():
+    # env = gym.make('Pendulum-v0').unwrapped
+
+    # 初始化部分
+    action_set, function_set = utils.process_action_set()  # 动作集
+    ppo = ppo_mod.PPO()
+    env = Env.env(action_set)
+    a_model_2 = attack_model.attack_model2()
+    all_ep_r = []
+    times = 0
+
+    # 循环部分
+    for ep in range(EP_MAX):
+        # s = env.reset()  # 状态初始化
+        buffer_s, buffer_a, buffer_r = [], [], []  # 缓存区
+        ep_r = 0  # 初始化回合
+        reward_sum = 0
+        attack_times = 0
+        defance_rate_sum = 0
+
+        for t in range(EP_LEN):
+
+            state, state_num = env.RequestArrive()
+            s = np.array(state)
+
+            action_num = random.randint(0,499)
+
+            print("action: ", action_num)
+
+            print('---------state:', state, '----------------')
+
+            if 1 not in state:
+                continue
+            a_node = a_model_2.attack_model_2(times)
+            attack_times += 1
+            print("attack_node: ", a_node)
+            times += 1
+
+            defence_rate, r_ = env.multipath_envfeedback(attack_node=a_node, action_num=action_num, state=state_num)
+            defance_rate_sum += defence_rate
+
+            reward_sum += r_
+
+        file_name = 'data/multipath_dRate_realData_1.txt'
+        with open(file_name, 'a') as file_obj:
+            file_obj.write(str(defance_rate_sum / attack_times))
+            file_obj.write('\n')
+
 
 if __name__ == '__main__':
     main()
+    # compare_random_main()
+    # compare_maltipath_main()
